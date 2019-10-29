@@ -14,28 +14,33 @@ public class TestStreamHandler : FlutterStreamHandler {
    }
 }
 
-class ColorDelegate : NSObject, LOTColorValueDelegate {
-   var color : CGColor
-   
-   init(color : CGColor) {
-      self.color = color
-   }
-   
-   func color(forFrame currentFrame: CGFloat, startKeyframe: CGFloat, endKeyframe: CGFloat, interpolatedProgress: CGFloat, start startColor: CGColor!, end endColor: CGColor!, currentColor interpolatedColor: CGColor!) -> Unmanaged<CGColor>! {
-      return  Unmanaged.passRetained(self.color)
-   }
-}
-
-class NumberDelegate : NSObject, LOTNumberValueDelegate {
-   var n : CGFloat
-   
-   init(number : CGFloat) {
-      self.n = number
-   }
-   
-   func floatValue(forFrame currentFrame: CGFloat, startKeyframe: CGFloat, endKeyframe: CGFloat, interpolatedProgress: CGFloat, startValue: CGFloat, endValue: CGFloat, currentValue interpolatedValue: CGFloat) -> CGFloat {
-      return self.n
-   }
+class CGColorValueProvider : AnyValueProvider {
+    var valueType: Any.Type {
+        return CGColor.self
+    }
+    
+    public typealias CGColorValueBlock = (CGFloat) -> Color
+    
+    public var color: CGColor {
+       didSet {
+         hasUpdate = true
+       }
+     }
+    
+     init(color : CGColor) {
+       self.color = color
+     }
+    
+    func hasUpdate(frame: CGFloat) -> Bool {
+        return hasUpdate
+    }
+    
+    func value(frame: CGFloat) -> Any {
+        hasUpdate = false
+        return color
+    }
+    
+    private var hasUpdate: Bool = true
 }
 
 func hexToColor(hex8: UInt32) -> CGColor {

@@ -1,6 +1,7 @@
 package com.example.flutter_lottie;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
@@ -159,6 +160,14 @@ public class LottieView implements PlatformView, MethodChannel.MethodCallHandler
                     final int toFrame = (int) args.get("toFrame");
                     animationView.setMaxFrame(toFrame);
                 }
+
+                if(args.get("loopMode") != null) {
+                    final String loopMode = args.get("loopMode").toString();
+                    final int repeatMode = parseRepeatMode(loopMode);
+                    final int repeatCount = parseRepeatCount(loopMode);
+                    animationView.setRepeatMode(repeatMode);
+                    animationView.setRepeatCount(repeatCount);
+                }
                 animationView.playAnimation();
                 break;
             case "stop":
@@ -243,6 +252,38 @@ public class LottieView implements PlatformView, MethodChannel.MethodCallHandler
                 break;
             default:
                 break;
+        }
+    }
+
+    private int parseRepeatMode(String value) {
+        switch (value) {
+            case "playOnce":
+                return ValueAnimator.RESTART;
+            case "autoReverse":
+                return ValueAnimator.REVERSE;
+            case "loop":
+                return ValueAnimator.INFINITE;
+            case "repeat":
+                return ValueAnimator.RESTART;
+            case "repeatBackwards":
+                return ValueAnimator.REVERSE;
+            default:
+                return ValueAnimator.INFINITE;
+        }
+    }
+
+    private int parseRepeatCount(String value) {
+        switch (value) {
+            case "playOnce":
+                return 0;
+            case "autoReverse":
+                return 1;
+            case "loop":
+            case "repeat":
+            case "repeatBackwards":
+                return 100000;
+            default:
+                return 0;
         }
     }
 

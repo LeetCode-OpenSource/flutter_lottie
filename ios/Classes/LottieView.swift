@@ -94,7 +94,7 @@ public class LottieView : NSObject, FlutterPlatformView {
       }
       
       if(call.method == "playWithProgress") {
-         let toProgress = props["toProgress"] as! CGFloat;
+         let toProgress = props["toProgress"] as! CGFloat
          if let fromProgress = props["fromProgress"] as? CGFloat {
             self.animationView?.play(fromProgress: fromProgress, toProgress: toProgress, completion: completionBlock)
          } else {
@@ -104,12 +104,16 @@ public class LottieView : NSObject, FlutterPlatformView {
       
       
       if(call.method == "playWithFrames") {
-         let toFrame = props["toFrame"] as! CGFloat;
-         if let fromFrame = props["fromFrame"] as? CGFloat {
-            self.animationView?.play(fromFrame: fromFrame, toFrame: toFrame, completion: completionBlock);
-         } else {
-            self.animationView?.play(toFrame: toFrame, completion: completionBlock);
-         }
+        let toFrame = props["toFrame"] as! CGFloat
+        let loopMode = props["loopMode"] as? String
+        
+        let _loopMode = parseLoopMode(value: loopMode)
+        
+        if let fromFrame = props["fromFrame"] as? CGFloat {
+            self.animationView?.play(fromFrame: fromFrame, toFrame: toFrame, loopMode: _loopMode, completion: completionBlock);
+        } else {
+            self.animationView?.play(toFrame: toFrame, loopMode: _loopMode, completion: completionBlock);
+        }
       }
       
       if(call.method == "stop") {
@@ -184,5 +188,22 @@ public class LottieView : NSObject, FlutterPlatformView {
          break;
       }
    }
+    
+    func parseLoopMode(value: String?) -> LottieLoopMode {
+        switch value {
+            case "playOnce":
+                return LottieLoopMode.playOnce
+            case "autoReverse":
+                return LottieLoopMode.autoReverse
+            case "loop":
+                return LottieLoopMode.loop
+            case "repeat":
+                return LottieLoopMode.repeat(100000)
+            case "repeatBackwards":
+                return LottieLoopMode.repeatBackwards(100000)
+            default:
+                return LottieLoopMode.playOnce
+        }
+    }
    
 }

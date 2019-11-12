@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'lotvalues/lot_value.dart';
+import 'lottie_loop_mode.dart';
 
 class LottieController {
   int id;
@@ -34,9 +35,10 @@ class LottieController {
     return _channel.invokeMethod('playWithProgress', { "fromProgress": fromProgress,  "toProgress": toProgress });
   }
 
-  Future<void> playWithFrames({int fromFrame, int toFrame}) async {
+  Future<void> playWithFrames({int fromFrame, int toFrame, LottieLoopMode loopMode}) async {
     assert(toFrame != null);
-    return _channel.invokeMethod('playWithFrames', { "fromFrame": fromFrame,  "toFrame": toFrame });
+    final _loopMode = loopMode ?? LottieLoopMode.PlayOnce;
+    return _channel.invokeMethod('playWithFrames', { "fromFrame": fromFrame, "loopMode": decodeLottieLoopMode(_loopMode), "toFrame": toFrame });
   }
 
   Future<void> stop() async {
